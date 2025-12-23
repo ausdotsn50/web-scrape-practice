@@ -3,11 +3,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 # from selenium.webdriver.common.keys import Keys
-import time, traceback
+import time, traceback, pprint
+
+# Global
+job_ad_details = []
 
 # chrome driver
 def add_chrome_driver():
     return webdriver.Chrome()
+
+def add_explicit_wait(driver):
+    return WebDriverWait(driver, 10) # an explicit wait
 
 def anchor_click(driver, xpath):
     anchor = driver.find_element(By.XPATH, xpath)
@@ -40,22 +46,7 @@ def seek_swe_listings(driver, wait):
         print(f"Error: {e}")
         traceback.print_exc()
 
-def view_indiv_jobs(driver):
-    try:
-        ...
-    except Exception as e:
-        print(f"Error: {e}")
-        traceback.print_exc()
-
-# keep browser open
-def main():
-    driver = add_chrome_driver()
-    driver.get("https://ph.jobstreet.com")
-    wait = WebDriverWait(driver, 10) # an explicit wait
-
-    seek_swe_listings(driver, wait)
-    
-    # view_indiv_jobs(driver)
+def view_indiv_jobs(driver, wait):
     wait.until(EC.any_of(
             EC.presence_of_element_located((By.XPATH, "//a[@data-automation='job-list-view-job-link']"))   
         )
@@ -64,7 +55,6 @@ def main():
     # jobs return only the page-loaded jobs
     jobs = driver.find_elements(By.XPATH, "//article[@data-automation='normalJob']")
     counter = 0
-    print(len(jobs))
     for job in jobs:
         if counter == 2:
             break
@@ -73,8 +63,34 @@ def main():
             counter += 1
             print(f"Succesful click! Counter: {counter}")
             time.sleep(3)
+
+            jad_container = driver.find_element(By.XPATH, "//div[@data-automation='jobAdDetails']")
+            job_ad_details.append({"text": jad_container.text})
+
+            time.sleep(3)
         except Exception as e:
             print(f"Unsuccesful click: {e}")
+    """
+    try:
+        ...
+    except Exception as e:
+        print(f"Error: {e}")
+        traceback.print_exc()
+    """
+
+# keep browser open
+def main():
+    driver = add_chrome_driver()
+    driver.get("https://ph.jobstreet.com")
+    wait = add_explicit_wait(driver)
+    pp = pprint.PrettyPrinter(indent=4) # pp printer obj
+
+    seek_swe_listings(driver, wait)
+    view_indiv_jobs(driver, wait)
+
+    pp.pprint(job_ad_details)
+
+    print(len(job_ad_details))
 
     input("Press Enter to close browser...")
     driver.quit()
