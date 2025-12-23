@@ -62,7 +62,7 @@ def main():
     )
 
     # jobs return only the page-loaded jobs
-    jobs = driver.find_elements(By.XPATH, "//a[@data-automation='job-list-view-job-link']")
+    jobs = driver.find_elements(By.XPATH, "//article[@data-automation='normalJob']")
     counter = 0
     print(len(jobs))
     for job in jobs:
