@@ -31,8 +31,11 @@ def seek_swe_listings(driver, wait):
         # sol to: ElementNotInteractableException
         driver.execute_script("arguments[0].click();", any_clsfc) # opened dropdown    
         
+        #anchor_click(driver, "//a[@data-automation='6281']")
+        #anchor_click(driver, "//a[@data-automation='6290']")
+        
         anchor_click(driver, "//a[@data-automation='6281']")
-        anchor_click(driver, "//a[@data-automation='6290']")
+        anchor_click(driver, "//a[@data-automation='6284']")
         
         # Click seek button
         seek = driver.find_element(By.XPATH, "//button[@data-automation='searchButton']")
@@ -56,18 +59,20 @@ def view_indiv_jobs(driver, wait):
     jobs = driver.find_elements(By.XPATH, "//article[@data-automation='normalJob']")
     counter = 0
     for job in jobs:
+        """
         if counter == 2:
             break
+        """
         try:
             driver.execute_script("arguments[0].click();", job) # chore: don't open job in a new tab
             counter += 1
             print(f"Succesful click! Counter: {counter}")
-            time.sleep(3)
+            time.sleep(5)
 
             jad_container = driver.find_element(By.XPATH, "//div[@data-automation='jobAdDetails']")
             job_ad_details.append({"text": jad_container.text})
 
-            time.sleep(3)
+            time.sleep(5)
         except Exception as e:
             print(f"Unsuccesful click: {e}")
     """
@@ -86,10 +91,22 @@ def main():
     pp = pprint.PrettyPrinter(indent=4) # pp printer obj
 
     seek_swe_listings(driver, wait)
-    view_indiv_jobs(driver, wait)
+    
+    while True:
+        view_indiv_jobs(driver, wait)
+        try:
+            ref_to_next = driver.find_element(By.XPATH, "//a[@aria-label='Next']")
+            hdn_status = ref_to_next.get_attribute("aria-hidden")   
+        except Exception as e:
+            print(e)
+            break
+
+        if hdn_status == "false":
+            continue
+        else: 
+            break
 
     pp.pprint(job_ad_details)
-
     print(len(job_ad_details))
 
     input("Press Enter to close browser...")
