@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time, traceback, pprint
 
 # Global
+counter = 0
 job_ad_details = []
 
 # chrome driver
@@ -31,6 +32,10 @@ def seek_swe_listings(driver, wait):
         
         # sol to: ElementNotInteractableException
         driver.execute_script("arguments[0].click();", any_clsfc) # opened dropdown    
+
+        wait.until(
+            EC.visibility_of_element_located((By.ID, "classificationsPanel"))
+        )
         
         #anchor_click(driver, wait, "//a[@data-automation='6281']")
         #anchor_click(driver, wait, "//a[@data-automation='6290']")
@@ -51,7 +56,7 @@ def seek_swe_listings(driver, wait):
         print(f"Error: {e}")
         traceback.print_exc()
 
-def view_indiv_jobs(driver, wait):
+def view_indiv_jobs(driver, wait, curr_counter):
     wait.until(EC.any_of(
             EC.presence_of_element_located((By.XPATH, "//a[@data-automation='job-list-view-job-link']"))   
         )
@@ -59,15 +64,15 @@ def view_indiv_jobs(driver, wait):
 
     # jobs return only the page-loaded jobs
     jobs = driver.find_elements(By.XPATH, "//article[@data-automation='normalJob']")
-    counter = 0
-
     for job in jobs:
+        """
         if counter == 2:
             break
+        """
         try:
             driver.execute_script("arguments[0].click();", job)
-            counter += 1
-            print(f"Succesful click! Counter: {counter}")
+            curr_counter += 1
+            print(f"Succesful click! Counter: {curr_counter}")
 
             jad_container = wait.until(
                 EC.presence_of_element_located((By.XPATH, "//div[@data-automation='jobAdDetails']"))
@@ -82,19 +87,25 @@ def main():
     driver.get("https://ph.jobstreet.com")
     wait = add_explicit_wait(driver)
     pp = pprint.PrettyPrinter(indent=4) # pp printer obj
-
+    counter = 0
     seek_swe_listings(driver, wait)
     
     while True:
-        view_indiv_jobs(driver, wait)
+        view_indiv_jobs(driver, wait, counter)
         try:
             ref_to_next = wait.until(
                 EC.presence_of_element_located((By.XPATH, "//a[@aria-label='Next']"))
             )
-            driver.execute_script("arguments[0].click();", ref_to_next)
-            print("Next button clicked")
+            hdn_status = ref_to_next.get_attribute("aria-hidden")
+            print(hdn_status)
+            if hdn_status == "false":
+                driver.execute_script("arguments[0].click();", ref_to_next)
+                print("Next button clicked")
+            else:
+                print("Next button is hidden. Breaking out of loop.")
+                break
         except Exception as e:
-            print("Next button does not exist. Breaking out of loop.")
+            print(e)
             traceback.print_exc()
             break
     
