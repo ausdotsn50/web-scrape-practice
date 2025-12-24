@@ -36,6 +36,7 @@ def seek_swe_listings(driver, wait):
         wait.until(
             EC.visibility_of_element_located((By.ID, "classificationsPanel"))
         )
+        time.sleep(3) # anchor sleep
         
         #anchor_click(driver, wait, "//a[@data-automation='6281']")
         #anchor_click(driver, wait, "//a[@data-automation='6290']")
@@ -66,18 +67,19 @@ def view_indiv_jobs(driver, wait, curr_counter):
     jobs = driver.find_elements(By.XPATH, "//article[@data-automation='normalJob']")
     for job in jobs:
         """
-        if counter == 2:
+        if curr_counter == 5:
             break
         """
         try:
             driver.execute_script("arguments[0].click();", job)
             curr_counter += 1
             print(f"Succesful click! Counter: {curr_counter}")
-
+            # time.sleep(3) # job extraction sleep
             jad_container = wait.until(
                 EC.presence_of_element_located((By.XPATH, "//div[@data-automation='jobAdDetails']"))
             )
             job_ad_details.append({"text": jad_container.text})
+            
         except Exception as e:
             print(f"Unsuccesful click: {e}")
 
@@ -109,7 +111,7 @@ def main():
             traceback.print_exc()
             break
     
-    pp.pprint(job_ad_details)
+    # pp.pprint(job_ad_details)
     print(len(job_ad_details))
 
     input("Press Enter to close browser...")
