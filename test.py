@@ -44,7 +44,7 @@ def seek_swe_listings(driver, wait):
         #anchor_click(driver, "//a[@data-automation='6281']")
         #anchor_click(driver, "//a[@data-automation='6284']")
         
-        anchor_click(driver, wait, "//a[@data-automation='6246']")
+        anchor_click(driver, wait, "//a[@data-automation='7019']")
 
         # Click seek button
         seek = driver.find_element(By.XPATH, "//button[@data-automation='searchButton']")
@@ -59,7 +59,7 @@ def seek_swe_listings(driver, wait):
 
 def view_indiv_jobs(driver, wait, curr_counter):
     wait.until(EC.any_of(
-            EC.presence_of_element_located((By.XPATH, "//a[@data-automation='job-list-view-job-link']"))   
+            EC.presence_of_element_located((By.XPATH, "//article[@data-automation='normalJob']"))   
         )
     )
     time.sleep(10)
