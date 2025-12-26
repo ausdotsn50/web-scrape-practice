@@ -50,7 +50,7 @@ def seek_swe_listings(driver, wait):
         seek = driver.find_element(By.XPATH, "//button[@data-automation='searchButton']")
         driver.execute_script("arguments[0].click();", seek)
         time.sleep(5) # find a more robust solution[]
-        driver.execute_script("arguments[0].click();", any_clsfc) # closed dropdown    
+        # driver.execute_script("arguments[0].click();", any_clsfc) # closed dropdown    
 
         print(f"\nSuccessfully navigated to: {driver.current_url}")
     except Exception as e:
@@ -62,6 +62,7 @@ def view_indiv_jobs(driver, wait, curr_counter):
             EC.presence_of_element_located((By.XPATH, "//a[@data-automation='job-list-view-job-link']"))   
         )
     )
+    time.sleep(10)
 
     # jobs return only the page-loaded jobs
     jobs = driver.find_elements(By.XPATH, "//article[@data-automation='normalJob']")
@@ -111,7 +112,7 @@ def main():
             traceback.print_exc()
             break
     
-    # pp.pprint(job_ad_details)
+    pp.pprint(job_ad_details)
     print(len(job_ad_details))
 
     input("Press Enter to close browser...")
