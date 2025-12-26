@@ -44,7 +44,7 @@ def seek_swe_listings(driver, wait):
         #anchor_click(driver, "//a[@data-automation='6281']")
         #anchor_click(driver, "//a[@data-automation='6284']")
         
-        anchor_click(driver, wait, "//a[@data-automation='7019']")
+        anchor_click(driver, wait, "//a[@data-automation='6246']")
 
         # Click seek button
         seek = driver.find_element(By.XPATH, "//button[@data-automation='searchButton']")
@@ -65,20 +65,38 @@ def view_indiv_jobs(driver, wait, curr_counter):
     time.sleep(10)
 
     # jobs return only the page-loaded jobs
+    # create an approach that keesps clicking when it goes to unsuccesful click
     jobs = driver.find_elements(By.XPATH, "//article[@data-automation='normalJob']")
     for job in jobs:
-        """
-        if curr_counter == 5:
-            break
-        """
         try:
             driver.execute_script("arguments[0].click();", job)
             curr_counter += 1
             print(f"Succesful click! Counter: {curr_counter}")
-            # time.sleep(3) # job extraction sleep
+            
             jad_container = wait.until(
                 EC.presence_of_element_located((By.XPATH, "//div[@data-automation='jobAdDetails']"))
             )
+
+            # Content stabilization marker
+            previous_length = 0
+            for _ in range(10):
+                try:
+                    # Re-fetch element to avoid stale reference
+                    jad_container = driver.find_element(By.XPATH, "//div[@data-automation='jobAdDetails']")
+                    current_text = jad_container.text
+                    current_length = len(current_text)
+                    
+                    if current_length == previous_length:
+                        stable_count += 1
+                        if stable_count >= 2:
+                            break
+
+                    previous_length = current_length
+                    time.sleep(0.3)
+                except:
+                    time.sleep(0.3)
+                    continue
+
             job_ad_details.append({"text": jad_container.text})
             
         except Exception as e:
