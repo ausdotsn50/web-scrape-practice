@@ -22,6 +22,7 @@ def anchor_click(driver, wait, xpath):
     )
     driver.execute_script("arguments[0].scrollIntoView(true);", anchor)
     driver.execute_script("arguments[0].click();", anchor)
+    time.sleep(1)
     
 def seek_swe_listings(driver, wait):
     try:    
@@ -41,10 +42,7 @@ def seek_swe_listings(driver, wait):
         #anchor_click(driver, wait, "//a[@data-automation='6281']")
         #anchor_click(driver, wait, "//a[@data-automation='6290']")
         
-        #anchor_click(driver, "//a[@data-automation='6281']")
-        #anchor_click(driver, "//a[@data-automation='6284']")
-        
-        anchor_click(driver, wait, "//a[@data-automation='6246']")
+        anchor_click(driver, wait, "//a[@data-automation='6163']")
 
         # Click seek button
         seek = driver.find_element(By.XPATH, "//button[@data-automation='searchButton']")
